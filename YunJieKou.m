@@ -1,9 +1,8 @@
 //
-//  YunJieKou.m
-//  GuQuan
-//
+//  YunJieKou.h
+//  
 //  Created by Wu Guoquan on 14-8-7.
-//  Copyright (c) 2014年 com.caibo-inc.guquan. All rights reserved.
+//  Copyright (c) 2014 HangZhou Caibo Network Technology Co,.Ltd . All rights reserved.
 //
 
 #import "YunJieKou.h"
