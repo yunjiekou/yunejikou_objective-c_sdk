@@ -44,8 +44,6 @@
     [request setTimeoutInterval: 60];
     [request setHTTPShouldHandleCookies:FALSE];
     [request setHTTPMethod:@"GET"];
-    // NSURLConnection* aSynConnection 可以申明为全局变量.
-    // 在协议方法中，通过判断aSynConnection，来区分，是哪一个异步请求的返回数据。
     aSynConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     
 }
