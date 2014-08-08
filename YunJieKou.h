@@ -18,8 +18,10 @@
 @protocol YunJiekouDelegate <NSObject>
 
 @optional
--(void)yunjiekou:(id)yjkObj serverDataGetSuccess:(id)serverData;
--(void)yunjiekou:(id)yjkObj serverDataGetFailure:(id)serverData message:(NSString *)message;
+
+-(void)yunjiekou:(id)yjkObj serverDataGetSuccess:(id)serverData message:(NSString *)message code:(int)code;
+-(void)yunjiekou:(id)yjkObj serverDataGetFailure:(id)serverData message:(NSString *)message code:(int)code;
+
 
 @end
 

@@ -113,7 +113,7 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error{
     if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetFailure:message:)])
     {
-        [_delegate yunjiekou:self serverDataGetFailure:nil message:@"Network error"];
+        [_delegate yunjiekou:self serverDataGetFailure:nil message:@"Network Error" code:300000001];
     }
 }
 
@@ -129,12 +129,12 @@
         {
             if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetSuccess:)])
             {
-                [_delegate yunjiekou:self serverDataGetSuccess:[respDic objectForKey:@"data"]];
+                [_delegate yunjiekou:self serverDataGetSuccess:[respDic objectForKey:@"data"] message:[respDic objectForKey:@"message"] code:[[respDic objectForKey:@"code"] intValue]];
             }
         }else{
             if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetFailure:message:)])
             {
-                [_delegate yunjiekou:self serverDataGetFailure:nil message:@"Data deserialize failre"];
+                [_delegate yunjiekou:self serverDataGetFailure:nil message:@"Data Deserialize Failure" code:300000002];
             }
         }
 
