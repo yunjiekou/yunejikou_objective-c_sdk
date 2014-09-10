@@ -26,15 +26,18 @@
         mDic = params;
     }
     
+    NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+    NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+    
     [mDic setObject:YunJieKou_AppKey forKey:@"appkey"];
     [mDic setObject:YunJieKou_Version forKey:@"v"];
-    [mDic setObject:[NSString stringWithFormat:@"%d",(int)[NSDate timeIntervalSinceReferenceDate]] forKey:@"timestamp"];
-    [mDic setObject:methodName forKey:@"method"];
+    [mDic setObject:[NSString stringWithFormat:@"%d",timeStampObj.intValue] forKey:@"timestamp"];
+    //[mDic setObject:methodName forKey:@"method"];
     [mDic setObject:@"json" forKey:@"format"];
 
-    NSString *sign = [self getSign:mDic];
-    NSString *urlString = [NSString stringWithFormat:@"%@?%@sign=%@",YunJieKou_Server,[self dicToString:mDic],sign];
     
+    NSString *sign = [self getSign:mDic method:methodName];
+    NSString *urlString = [NSString stringWithFormat:@"%@%@?%@sign=%@",YunJieKou_Server,methodName,[self dicToString:mDic],sign];
     
     urlString = [urlString stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
@@ -43,32 +46,36 @@
     [request setTimeoutInterval: 60];
     [request setHTTPShouldHandleCookies:FALSE];
     [request setHTTPMethod:@"GET"];
+    
     aSynConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
     
 }
+
+
 
 -(NSString *)dicToString:(NSDictionary *)dic
 {
     NSString *kvs = @"";
     for (NSString *key in dic) {
-        
         kvs = [NSString stringWithFormat:@"%@%@=%@&",kvs,key,[self encode:dic[key]]];
+        
     }
     
     return kvs;
 }
 
 
--(NSString *)getSign:(NSDictionary *)params
+-(NSString *)getSign:(NSDictionary *)params method:(NSString *)method
 {
+    NSArray *myKeys = [params allKeys];
+    NSArray *sortedKeys = [myKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     
     NSString *kvs = @"";
-    for (NSString *key in params) {
-        
+    for (NSString *key in sortedKeys) {
         kvs = [NSString stringWithFormat:@"%@%@%@",kvs,key,[self encode:params[key]]];
     }
     
-    kvs = [NSString stringWithFormat:@"%@%@%@",YunJieKou_AppSecret,kvs,YunJieKou_AppSecret];
+    kvs = [NSString stringWithFormat:@"%@%@%@%@",YunJieKou_AppSecret,kvs,method,YunJieKou_AppSecret];
     return  [self md5:kvs];
 }
 
@@ -111,7 +118,7 @@
 
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error{
-    if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetFailure:message:)])
+    if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetFailure:message:code:)])
     {
         [_delegate yunjiekou:self serverDataGetFailure:nil message:@"Network Error" code:300000001];
     }
@@ -127,12 +134,12 @@
                                                                      error:&error];
         if(respDic)
         {
-            if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetSuccess:)])
+            if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetSuccess:message:code:)])
             {
                 [_delegate yunjiekou:self serverDataGetSuccess:[respDic objectForKey:@"data"] message:[respDic objectForKey:@"message"] code:[[respDic objectForKey:@"code"] intValue]];
             }
         }else{
-            if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetFailure:message:)])
+            if([_delegate respondsToSelector:@selector(yunjiekou:serverDataGetFailure:message:code:)])
             {
                 [_delegate yunjiekou:self serverDataGetFailure:nil message:@"Data Deserialize Failure" code:300000002];
             }
